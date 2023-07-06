@@ -14,5 +14,5 @@ def do_pack():
                    capture=True)
     if status.failed:
         return None
-    print(status)
+    
     return status
