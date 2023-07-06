@@ -3,11 +3,8 @@
 
 from fabric.api import local
 from datetime import datetime
+import os
 
-from fabric.decorators import runs_once
-
-
-@runs_once
 def do_pack():
     '''generates .tgz archive from the contents of the web_static folder'''
     local("mkdir -p versions")
@@ -18,4 +15,7 @@ def do_pack():
 
     if result.failed:
         return None
+    
+    size = os.stat(path).st_size
+    print('web_static packed: {} -> {}Bytes'.format(path, size))
     return path
