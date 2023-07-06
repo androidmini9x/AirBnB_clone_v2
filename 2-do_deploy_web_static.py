@@ -1,43 +1,35 @@
 #!/usr/bin/python3
-"""Deploy an archive of static html to my web servers with Fabric3"""
+"""
+A Fabric script (based on the file 1-pack_web_static.py
+that distributes an archive to your web servers,
+using the function do_deploy
+"""
 
-from fabric import api
-from fabric.contrib import files
+from fabric.api import run, put, env
 import os
 
 
-api.env.user = 'ubuntu'
-api.env.hosts = ['35.153.192.27', '54.89.28.21']
-api.env.key_filename = '~/.ssh/school'
-
-
 def do_deploy(archive_path):
-    """Function to transfer `archive_path` to web servers.
+    """ Uncompresses and deploy the archive into the servers """
 
-    Args:
-        archive_path (str): path of the .tgz file to transfer
-
-    Returns: True on success, False otherwise.
-    """
-    if not os.path.isfile(archive_path):
+    env.hosts = ['35.153.192.27', '54.89.28.21']
+    if os.path.exists(archive_path) is False:
         return False
-    with api.cd('/tmp'):
-        basename = os.path.basename(archive_path)
-        root, ext = os.path.splitext(basename)
-        outpath = '/data/web_static/releases/{}'.format(root)
-        try:
-            putpath = api.put(archive_path)
-            if files.exists(outpath):
-                api.run('rm -rdf {}'.format(outpath))
-            api.run('mkdir -p {}'.format(outpath))
-            api.run('tar -xzf {} -C {}'.format(putpath[0], outpath))
-            api.run('rm -f {}'.format(putpath[0]))
-            api.run('mv -u {}/web_static/* {}'.format(outpath, outpath))
-            api.run('rm -rf {}/web_static'.format(outpath))
-            api.run('rm -rf /data/web_static/current')
-            api.run('ln -sf {} /data/web_static/current'.format(outpath))
-            print('New version deployed!')
-        except:
-            return False
-        else:
-            return True
+
+    data_path = '/data/web_static/releases/'
+    tmp = archive_path.split('.')[0]
+    name = tmp.split('/')[1]
+    dest = data_path + name
+
+    try:
+        put(archive_path, '/tmp')
+        run('sudo mkdir -p {}'.format(dest))
+        run('sudo tar -xzf /tmp/{}.tgz -C {}'.format(name, dest))
+        run('sudo rm -f /tmp/{}.tgz'.format(name))
+        run('sudo mv {}/web_static/* {}/'.format(dest, dest))
+        run('sudo rm -rf {}/web_static'.format(dest))
+        run('sudo rm -rf /data/web_static/current')
+        run('sudo ln -s {} /data/web_static/current'.format(dest))
+        return True
+    except Exception:
+        return False
