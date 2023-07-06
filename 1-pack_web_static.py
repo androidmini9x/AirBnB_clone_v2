@@ -18,7 +18,7 @@ def do_pack():
             mkdir = api.local('mkdir versions')
             if mkdir.failed:
                 return None
-        suffix = datetime.now().strftime('%Y%m%d%M%S')
+        suffix = datetime.now().strftime('%Y%m%d%H%M%S')
         path = 'versions/web_static_{}.tgz'.format(suffix)
         tar = api.local('tar -cvzf {} web_static'.format(path))
         if tar.failed:
