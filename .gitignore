@@ -18,4 +18,4 @@ generate-authors.sh
 *~
 
 # Releases tarballs
-versions/
+# versions/
