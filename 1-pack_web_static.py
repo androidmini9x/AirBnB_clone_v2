@@ -10,7 +10,7 @@ def do_pack():
     """Archives the static files."""
     if not os.path.isdir("versions"):
         os.mkdir("versions")
-    cur_time = datetime.now()
+
     filename = strftime("%Y%m%d%H%M%S")
     output = "versions/web_static_{}.tgz".format(filename)
     try:
