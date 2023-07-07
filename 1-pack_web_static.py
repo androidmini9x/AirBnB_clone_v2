@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """A module for web application deployment with Fabric."""
 import os
-from datetime import datetime
+from time import strftime
 from fabric.api import local, runs_once
 
 
@@ -11,14 +11,8 @@ def do_pack():
     if not os.path.isdir("versions"):
         os.mkdir("versions")
     cur_time = datetime.now()
-    output = "versions/web_static_{}{}{}{}{}{}.tgz".format(
-        cur_time.year,
-        cur_time.month,
-        cur_time.day,
-        cur_time.hour,
-        cur_time.minute,
-        cur_time.second
-    )
+    filename = strftime("%Y%m%d%H%M%S")
+    output = "versions/web_static_{}.tgz".format(filename)
     try:
         print("Packing web_static to {}".format(output))
         local("tar -cvzf {} web_static".format(output))
